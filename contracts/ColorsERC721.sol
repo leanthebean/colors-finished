@@ -1,42 +1,54 @@
 pragma solidity ^0.4.18;
 
 import 'zeppelin-solidity/contracts/token/ERC721/ERC721Token.sol';
-import 'zeppelin-solidity/contracts/ownership/Ownable.sol'; 
+import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
 
-contract ColorsERC721 is ERC721Token, Ownable { 
-  string public constant NAME = "COLORS";
-  string public constant SYMBOL = "HEX"; // RGB
+contract ColorsERC721 is ERC721Token, Ownable {
+  string constant public NAME = "COLORS";
+  string constant public SYMBOL = "HEX";
 
-  uint256 public constant PRICE = 0.001 ether;
+  uint256 constant public PRICE = .001 ether;
 
-  // Mapping from id to owner to track uniqueness 
-  mapping(uint256 => uint256) private tokensToAddress;
+  mapping(uint256 => uint256) tokenToPriceMap;
 
   function ColorsERC721() public {
 
   }
 
-  function name() public pure returns (string) { 
+  function getName() public pure returns(string) {
     return NAME;
   }
 
-  function symbol() public pure returns(string) { 
-    return SYMBOL; 
+  function getSymbol() public pure returns(string) {
+    return SYMBOL;
   }
 
-  function mint(uint256 hexValue) public payable onlyUnique(hexValue) { 
+  function mint(uint256 colorId) public payable {
     require(msg.value >= PRICE);
-    ERC721Token._mint(msg.sender, hexValue);
-    
+    _mint(msg.sender, colorId);
+    tokenToPriceMap[colorId] = PRICE;
+
     if (msg.value > PRICE) {
       uint256 priceExcess = msg.value - PRICE;
       msg.sender.transfer(priceExcess);
     }
   }
 
-  modifier onlyUnique(uint256 hexValue) { 
-    require(tokensToAddress[hexValue] == 0);
+  function claim(uint256 colorId) public payable onlyMintedTokens(colorId) {
+    uint256 askingPrice = getClaimingPrice(colorId);
+    require(msg.value >= askingPrice);
+    clearApprovalAndTransfer(ownerOf(colorId), msg.sender, colorId);
+    tokenToPriceMap[colorId] = askingPrice;
+  }
+
+  function getClaimingPrice(uint256 colorId) public view onlyMintedTokens(colorId) returns(uint256){
+    uint256 currentPrice = tokenToPriceMap[colorId];
+    uint256 askingPrice = (currentPrice * 50) / 100;
+    return askingPrice;
+  }
+
+  modifier onlyMintedTokens(uint256 colorId) {
+    require (tokenToPriceMap[colorId] != 0);
     _;
   }
 }
-
