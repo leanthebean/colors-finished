@@ -15,11 +15,11 @@ contract ColorsERC721 is ERC721Token, Ownable {
 
   }
 
-  function getName() public pure returns(string) {
+  function name() public pure returns(string) {
     return NAME;
   }
 
-  function getSymbol() public pure returns(string) {
+  function symbol() public pure returns(string) {
     return SYMBOL;
   }
 
