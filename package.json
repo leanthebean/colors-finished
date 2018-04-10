@@ -1,17 +1,26 @@
 {
   "name": "tutorialtoken",
   "version": "1.0.0",
-  "description": "",
+  "description": "ERC721 tutorial",
   "main": "truffle.js",
+  "preferGlobal": true,
+  "engines": {
+    "node": ">=7.6"
+  },
+  "engineStrict": true,
   "directories": {
     "test": "test"
   },
   "scripts": {
     "dev": "lite-server",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "truffle test"
   },
   "author": "",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/leanthebean/colors-finished.git"
+  },
   "devDependencies": {
     "lite-server": "^2.3.0"
   },
